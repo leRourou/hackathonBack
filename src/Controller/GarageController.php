@@ -24,4 +24,15 @@ final class GarageController extends AbstractController
             'garages' => $garages
         ]);
     }
+
+
+    #[Route('/garages', name: 'app_garages_get')]
+    public function getGarages(GarageRepository $garageRepository): JsonResponse
+    {
+        $garages = $garageRepository->findAll();
+
+        return $this->json([
+            'garages' => $garages
+        ]);
+    }
 }

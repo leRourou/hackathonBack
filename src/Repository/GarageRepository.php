@@ -43,6 +43,18 @@ class GarageRepository extends ServiceEntityRepository
         return $result->fetchAllAssociative();
     }
 
+    public function findAll(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT * FROM garage";
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
 
     //    /**
     //     * @return Garage[] Returns an array of Garage objects
