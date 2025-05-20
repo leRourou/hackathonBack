@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: OperationCategoryRepository::class)]
@@ -14,15 +15,19 @@ class OperationCategory
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(['operation_category:read'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['operation_category:read, operation:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['operation_category:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['operation_category:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
@@ -34,7 +39,9 @@ class OperationCategory
     public function __construct()
     {
         $this->id = Uuid::v7()->toRfc4122();
+
         $this->operations = new ArrayCollection();
+
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }

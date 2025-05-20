@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 
@@ -15,27 +16,35 @@ class Operation
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(['operation:read'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['operation:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['operation:read'])]
     private ?string $additionnal_help = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['operation:read'])]
     private ?string $additionnal_comment = null;
 
     #[ORM\Column]
+    #[Groups(['operation:read'])]
     private ?int $time_unit = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['operation:read'])]
     private ?string $price = null;
 
     #[ORM\Column]
+    #[Groups(['operation:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['operation:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
@@ -44,13 +53,15 @@ class Operation
     #[ORM\ManyToMany(targetEntity: Appointment::class, mappedBy: 'operations')]
     private Collection $appointments;
 
-    #[ORM\ManyToOne(inversedBy: 'operations')]
+    #[ORM\ManyToOne(targetEntity: OperationCategory::class, inversedBy: 'operations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?OperationCategory $category = null;
+    #[Groups(['operation:read'])]
+    private OperationCategory $category;
 
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
+
         $this->id = Uuid::v7()->toRfc4122();
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
@@ -177,7 +188,7 @@ class Operation
         return $this->category;
     }
 
-    public function setCategory(?OperationCategory $category): static
+    public function setCategory(?OperationCategory $category): self
     {
         $this->category = $category;
 
