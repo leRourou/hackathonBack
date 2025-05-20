@@ -35,6 +35,8 @@ class OperationCategory
     {
         $this->id = Uuid::v7()->toRfc4122();
         $this->operations = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?string
