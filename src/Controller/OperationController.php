@@ -11,7 +11,7 @@ final class OperationController extends AbstractController
 {
 
     #[Route('/operations', name: 'app_operations_get_all')]
-    public function index(OperationService $operationService): JsonResponse
+    public function getAll(OperationService $operationService): JsonResponse
     {
         $operations = $operationService->getAllOperations();
         return $this->json($operations, context: [

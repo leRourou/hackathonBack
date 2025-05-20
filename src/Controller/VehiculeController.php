@@ -11,7 +11,7 @@ use App\Entity\Vehicule;
 final class VehiculeController extends AbstractController
 {
     #[Route('/vehicules/{immatriculation}', name: 'app_vehivule_get_immatriculation')]
-    public function index(string $immatriculation): JsonResponse
+    public function getByImmatriculation(string $immatriculation): JsonResponse
     {
         // TODO : Faire avec un FormType
         $regex = '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/';
