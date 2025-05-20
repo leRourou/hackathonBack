@@ -19,7 +19,7 @@ class OperationCategory
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['operation_category:read, operation:read'])]
+    #[Groups(['operation_category:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
