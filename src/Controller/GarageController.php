@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\GarageRepository;
+use App\Service\GarageService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -21,13 +22,13 @@ final class GarageController extends AbstractController
             new OA\QueryParameter(
                 name: 'latitude',
                 description: 'Latitude du point de recherche',
-                required: true,
+                required: false,
                 schema: new OA\Schema(type: 'number', format: 'float')
             ),
             new OA\QueryParameter(
                 name: 'longitude',
                 description: 'Longitude du point de recherche',
-                required: true,
+                required: false,
                 schema: new OA\Schema(type: 'number', format: 'float')
             ),
             new OA\QueryParameter(
@@ -38,45 +39,19 @@ final class GarageController extends AbstractController
             )
         ]
     )]
-    public function nearestGarages(Request $request, GarageRepository $garageRepository): JsonResponse
+    public function nearestGarages(Request $request, GarageService $garageService): JsonResponse
     {
         $lat = (float) $request->query->get('latitude');
         $lng = (float) $request->query->get('longitude');
         $page = max(1, (int) $request->query->get('page', 1));
 
-        $garages = $garageRepository->findNearestGarages($lat, $lng, $page);
+        $garages = [];
 
-        return $this->json([
-            'garages' => $garages
-        ]);
-    }
-
-
-    #[Route('/', name: 'app_garages_get', methods: ['GET'])]
-    #[OA\Get(
-        path: '/api/garages',
-        summary: 'Récupère tous les garages',
-        description: "Retourne la liste complète de tous les garages disponibles en base de données.",
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Liste des garages récupérée avec succès',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(
-                            property: 'garages',
-                            type: 'array',
-                            items: new OA\Items(type: 'object') // Tu peux détailler ici la structure d'un garage si besoin
-                        )
-                    ]
-                )
-            )
-        ]
-    )]
-    public function getGarages(GarageRepository $garageRepository): JsonResponse
-    {
-        $garages = $garageRepository->findAll();
+        if ($lat && $lng) {
+            $garages = $garageService->findNearestGarages($lat, $lng, $page);
+        } else {
+            $garages = $garageService->getAllGarages();
+        }
 
         return $this->json([
             'garages' => $garages

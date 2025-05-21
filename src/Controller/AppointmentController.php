@@ -26,7 +26,6 @@ final class AppointmentController extends AbstractController
             )
         ]
     )]
-
     public function getAvailabilities(Request $request, AppointmentService $appointmentService): JsonResponse
     {
         $page = max((int) $request->query->get('page', 1), 1);
