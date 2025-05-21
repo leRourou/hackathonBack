@@ -133,24 +133,48 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/user', name: 'app_appointment_get_by_user', methods: ['GET'])]
-    public function getAppointmentByUser(VehiculeService $vehiculeService, AppointmentService $appointmentService): JsonResponse
+    #[OA\Post(
+        path: '/api/appointments/user',
+        summary: 'Récupérer les rendez-vous de l’utilisateur',
+        description: 'Retourne tous les rendez-vous associés à l’utilisateur actuellement connecté.',
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Rendez-vous créé avec succès',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'appointment',
+                            type: 'array',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 42),
+                                new OA\Property(property: 'date', type: 'string', format: 'date-time', example: '2025-05-22 14:00:00'),
+                                new OA\Property(property: 'status', type: 'string', example: 'pending'),
+                                new OA\Property(property: 'notes', type: 'string', example: 'Client souhaite une vidange et un contrôle des freins.'),
+                                new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
+                                new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
+                                new OA\Property(property: 'vehicule_id', type: 'string', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
+                                new OA\Property(property: 'garage_id', type: 'integer', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
+                                new OA\Property(
+                                    property: 'operations',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'string'),
+                                    example: ['0196f274-2ebf-7e7a-a304-5470b0a52028', '0196f274-2ebf-7e7a-a304-5470b0a52028']
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
+        ]
+    )]
+    public function getAppointmentByUser(AppointmentService $appointmentService): JsonResponse
     {
-        $vehicules = $vehiculeService->getVehiculesByUser($this->getUser());
+        $user = $this->getUser();
 
-        if (empty($vehicules) || !$vehicules) {
-            return $this->json(['message' => 'No vehicules found for this user'], 404);
-        }
+        $appointments = $appointmentService->getAppointmentsByUser($user);
 
-        $appointments = [];
-
-        foreach ($vehicules as $vehicule) {
-
-            $appointment = $appointmentService->getAppointmentByVehicule($vehicule);
-
-            if (empty($appointment)) continue;
-
-            $appointments[] = $appointment;
-        }
         return $this->json($appointments, 200, context: [
             'groups' => ['appointment:read'],
         ]);
