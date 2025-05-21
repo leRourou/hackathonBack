@@ -16,6 +16,17 @@ class VehiculeRepository extends ServiceEntityRepository
         parent::__construct($registry, Vehicule::class);
     }
 
+
+    public function findByUser(string $userId): array 
+    {
+        return $this->createQueryBuilder('v')
+            ->andWhere('v.user = :val OR IDENTITY(v.user) = :val')
+            ->setParameter('val', $userId)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     //    /**
     //     * @return Vehicule[] Returns an array of Vehicule objects
     //     */

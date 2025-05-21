@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\VehiculeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\VehiculeRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: VehiculeRepository::class)]
@@ -15,24 +16,31 @@ class Vehicule
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(["vehicule:read"])]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255)] 
+    #[Groups(["vehicule:read"])]
     private ?string $brand = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255)]  
+    #[Groups(["vehicule:read"])]
     private ?string $model = null;
 
     #[ORM\Column(length: 7)]
+    #[Groups(["vehicule:read"])]
     private ?string $license_plate = null;
 
     #[ORM\Column(length: 17)]
+    #[Groups(["vehicule:read"])]
     private ?string $vin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(["vehicule:read"])]
     private ?\DateTime $registration_date = null;
 
     #[ORM\Column]
+    #[Groups(["vehicule:read"])]
     private ?int $mileage = null;
 
     #[ORM\ManyToOne(inversedBy: 'vehicules')]
@@ -40,9 +48,11 @@ class Vehicule
     private ?User $user = null;
 
     #[ORM\Column]
+    #[Groups(["vehicule:read"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(["vehicule:read"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
