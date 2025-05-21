@@ -8,27 +8,34 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(['appointment:read'])]
     private ?string $id = null;
 
     #[ORM\Column]
+    #[Groups(['appointment:read'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['appointment:read'])]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['appointment:read'])]
     private ?string $notes = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['appointment:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['appointment:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
@@ -62,7 +69,7 @@ class Appointment
     {
         return $this->date;
     }
-    
+
 
     public function setDate(\DateTimeImmutable $date): static
     {

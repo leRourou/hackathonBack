@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Repository\GarageRepository;
 use App\Service\GarageService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -13,7 +12,7 @@ use OpenApi\Attributes as OA;
 #[Route(path: '/api/garages')]
 final class GarageController extends AbstractController
 {
-    #[Route('/', name: 'app_garages_get_nearest', methods: ['GET'])]
+    #[Route('', name: 'app_garages_get_nearest', methods: ['GET'])]
     #[OA\Get(
         path: '/api/garages',
         summary: 'Récupère les garages les plus proches',

@@ -3,19 +3,17 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Entity\Vehicule;
 use App\Repository\VehiculeRepository;
 
-class VehiculeService 
+class VehiculeService
 {
     public function __construct(
         private VehiculeRepository $repository
-    )
-    { }
+    ) {}
 
-    public function getVehiculeByUser(User $user): array
+    public function getVehiculesByUser(User $user): array
     {
         return $this->repository->findByUser($user->getId());
     }
-
 }
-

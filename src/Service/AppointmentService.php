@@ -7,15 +7,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Vehicule;
 use App\Entity\Garage;
 use App\Entity\Operation;
+use App\Entity\User;
+use App\Repository\AppointmentRepository;
+use App\Repository\GarageRepository;
+use App\Repository\VehiculeRepository;
 
 class AppointmentService
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private GarageRepository $garageRepository,
+        private VehiculeRepository $vehiculeRepository,
+        private AppointmentRepository $appointmentRepository
+    ) {}
 
     public function getAvailabilities(int $page): array
     {
@@ -70,8 +74,8 @@ class AppointmentService
         $appointment->setStatus($data['status']);
         $appointment->setNotes($data['notes']);
 
-        $vehicule = $this->entityManager->getRepository(Vehicule::class)->find($data['vehicule_id']);
-        $garage = $this->entityManager->getRepository(Garage::class)->find($data['garage_id']);
+        $vehicule = $this->vehiculeRepository->find($data['vehicule_id']);
+        $garage = $this->garageRepository->find($data['garage_id']);
 
         if (!$vehicule || !$garage) {
             throw new \RuntimeException('Vehicule or Garage not found.');
@@ -98,9 +102,14 @@ class AppointmentService
             'updated_at' => $appointment->getUpdatedAt()->format('Y-m-d H:i:s'),
             'vehicule_id' => $appointment->getVehicule()->getId(),
             'garage_id' => $appointment->getGarage()->getId(),
-            'operations' => array_map(function($operation) {
+            'operations' => array_map(function ($operation) {
                 return $operation->getId();
             }, $appointment->getOperations()->toArray())
         ];
+    }
+
+    public function getAppointmentByVehicule(Vehicule $vehicule): array
+    {
+        return $this->appointmentRepository->findBy(['vehicule' => $vehicule]);
     }
 }

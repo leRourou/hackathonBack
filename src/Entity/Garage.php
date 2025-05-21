@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[OA\Schema(schema: "Garage", description: "Garage avec ses coordonnées et informations de localisation")]
 #[ORM\Entity(repositoryClass: GarageRepository::class)]

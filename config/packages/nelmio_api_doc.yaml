@@ -4,5 +4,13 @@ nelmio_api_doc:
             title: Chatbot API
             description: Chatbot API documentation
             version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - Bearer: []
     areas:
         path_patterns: [ ^/api ]

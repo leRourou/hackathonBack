@@ -19,11 +19,11 @@ class Vehicule
     #[Groups(["vehicule:read"])]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255)] 
+    #[ORM\Column(length: 255)]
     #[Groups(["vehicule:read"])]
     private ?string $brand = null;
 
-    #[ORM\Column(length: 255)]  
+    #[ORM\Column(length: 255)]
     #[Groups(["vehicule:read"])]
     private ?string $model = null;
 
