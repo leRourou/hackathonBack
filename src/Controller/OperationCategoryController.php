@@ -25,4 +25,14 @@ final class OperationCategoryController extends AbstractController
             'groups' => ['operation_category:read'],
         ]);
     }
+
+    #[Route('/category/{id}', name: 'app_operation_category_get_by_id', methods: ['GET'])]
+    public function getCategoryById(OperationCategoryService $operationCategoryService, string $id): JsonResponse
+    {
+        $operation = $operationCategoryService->getOperationCategoryById($id);
+
+        return $this->json($operation, context: [
+            'groups' => ['operation_category:read'],
+        ]);
+    }
 }
