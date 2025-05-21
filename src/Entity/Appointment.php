@@ -58,10 +58,11 @@ class Appointment
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
+    
 
     public function setDate(\DateTimeImmutable $date): static
     {

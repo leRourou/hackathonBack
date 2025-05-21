@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Attributes as OA;
 
-#[Route('/api/appointments')]
+#[Route('/api/appointments', name: 'app_appointment_')]
 final class AppointmentController extends AbstractController
 {
     #[Route('/avaibilities', name: 'app_appointment_get_availabilities', methods: ['GET'])]
@@ -32,5 +32,14 @@ final class AppointmentController extends AbstractController
         $availabilities = $appointmentService->getAvailabilities($page);
 
         return $this->json(['availabilities' => $availabilities]);
+    }
+
+    #[Route('', name: 'new_appointment', methods: ['POST'])]
+    public function newAppointment(Request $request, AppointmentService $appointmentService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $appointment = $appointmentService->createAppointment($data);
+
+        return $this->json(['appointment' => $appointment], 201);
     }
 }
