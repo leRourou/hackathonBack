@@ -16,11 +16,12 @@ class Operation
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
-    #[Groups(['operation:read'])]
+    #[Groups(['operation:read', 'appointment:read'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['operation:read'])]
+    #[Groups(['operation:read', 'appointment:read'])]
+
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
