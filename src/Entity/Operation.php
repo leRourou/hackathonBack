@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
-
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: OperationRepository::class)]
 class Operation
@@ -55,13 +55,11 @@ class Operation
 
     #[ORM\ManyToOne(targetEntity: OperationCategory::class, inversedBy: 'operations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['operation:read'])]
     private OperationCategory $category;
 
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
-
         $this->id = Uuid::v7()->toRfc4122();
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
@@ -181,6 +179,14 @@ class Operation
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+
+    #[Groups(['operation:read'])]
+    #[SerializedName('category')]
+    public function getCategoryId(): ?string
+    {
+        return $this->category?->getId();
     }
 
     public function getCategory(): ?OperationCategory
