@@ -2,11 +2,16 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Vehicule;
 use OpenApi\Attributes as OA;
+use App\Form\VehiculeStoreForm;
+use App\Service\VehiculeService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route(path: '/api/vehicules')]
 final class VehiculeController extends AbstractController
@@ -25,7 +30,6 @@ final class VehiculeController extends AbstractController
             )
         ]
     )]
-
     public function getByImmatriculation(string $immatriculation): JsonResponse
     {
         // TODO : Faire avec un FormType
@@ -45,5 +49,35 @@ final class VehiculeController extends AbstractController
         $vehicule->setRegistrationDate(new \DateTime('2020-01-01'));
 
         return $this->json($vehicule);
+    }
+
+     
+    #[Route('/', name: 'app_vehicule_store', methods: ['POST'])]
+    public function store(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $form = $this->createForm(VehiculeStoreForm::class, new Vehicule());
+        $form->submit(json_decode($request->getContent(), true));
+
+        if(!$form->isValid()) {
+            return $this->json($form->getErrors(), Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var Vehicule */
+        $vehicule = $form->getData();
+
+        $vehicule->setUser($this->getUser());
+
+        $entityManager->persist($vehicule);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Vehicule created'], Response::HTTP_CREATED);
+    }
+
+    #[Route('/', name: 'app_vehicule_get_by_user', methods: ['GET'])]
+    public function getVehiculeByUser(VehiculeService $vehiculeService): JsonResponse
+    {
+        $vehicules = $vehiculeService->getVehiculeByUser($this->getUser());
+
+       return $this->json($vehicules, 200, [], ['groups' => 'vehicule:read']);
     }
 }
