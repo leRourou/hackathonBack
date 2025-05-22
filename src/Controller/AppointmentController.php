@@ -197,6 +197,37 @@ final class AppointmentController extends AbstractController
 
 
     #[Route('/{appointmentId}/pdf', name: 'app_appointment_pdf_summary', methods: ['GET'])]
+    #[OA\Get(
+        path: '/appointments/{appointmentId}/pdf',
+        summary: 'Génère un résumé PDF du rendez-vous',
+        description: 'Retourne un fichier PDF contenant les détails complets d’un rendez-vous, incluant le véhicule, le garage et les opérations associées.',
+        operationId: 'getAppointmentPdfSummary',
+        tags: ['Rendez-vous'],
+        parameters: [
+            new OA\Parameter(
+                name: 'appointmentId',
+                in: 'path',
+                required: true,
+                description: 'Identifiant UUID du rendez-vous',
+                schema: new OA\Schema(type: 'string', format: 'uuid')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Fichier PDF généré avec succès',
+                content: new OA\JsonContent(
+                    type: 'string',
+                    format: 'binary',
+                    example: 'Fichier PDF en sortie'
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Rendez-vous introuvable'
+            )
+        ]
+    )]
     public function generatePDFSummary(AppointmentService $appointmentService, string $appointmentId): Response
     {
         $appointment = $appointmentService->getAppointmentById($appointmentId);
