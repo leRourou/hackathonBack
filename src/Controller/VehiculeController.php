@@ -125,4 +125,78 @@ final class VehiculeController extends AbstractController
 
         return $this->json($vehicules, 200, [], ['groups' => 'vehicule:read']);
     }
+
+    #[Route('/{vehiculeId}/operations', name: 'app_vehicule_get_operations', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/vehicules/{vehiculeId}/operations',
+        summary: "Prochaines opérations d’un véhicule",
+        description: "Récupère les prochaines opérations à effectuer sur le véhicule identifié.",
+        parameters: [
+            new OA\Parameter(
+                name: 'vehiculeId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string'),
+                description: "Identifiant du véhicule"
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des opérations à venir',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'operations',
+                            type: 'array',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(
+                                        property: 'label',
+                                        type: 'string',
+                                        example: 'Purge liquide de refroidissement'
+                                    ),
+                                    new OA\Property(
+                                        property: 'next_in_value',
+                                        type: 'integer',
+                                        example: 55
+                                    ),
+                                    new OA\Property(
+                                        property: 'next_in_unit',
+                                        type: 'string',
+                                        enum: ['days', 'km'],
+                                        example: 'days'
+                                    ),
+                                    new OA\Property(
+                                        property: 'criticality',
+                                        type: 'integer',
+                                        example: 7
+                                    )
+                                ]
+                            )
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Utilisateur non authentifié'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Erreur interne du serveur'
+            )
+        ]
+    )]
+    public function getVehiculeNextOperations(VehiculeService $vehiculeService, string $vehiculeId): JsonResponse
+    {
+        $vehicule = $vehiculeService->getVehiculeById($vehiculeId);
+        $nextOperations = $vehiculeService->getNextOperations($vehicule);
+
+        return $this->json([
+            "operations" => $nextOperations,
+        ], 200, []);
+    }
 }
