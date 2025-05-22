@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Service\AppointmentService;
-use App\Service\VehiculeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,6 +24,12 @@ final class AppointmentController extends AbstractController
                 description: 'Numéro de page pour la pagination des créneaux disponibles',
                 required: false,
                 schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+            new OA\QueryParameter(
+                name: 'date',
+                description: 'Date spécifique pour récupérer les créneaux disponibles',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date', example: '2025-05-21')
             )
         ],
         responses: [
@@ -56,12 +61,19 @@ final class AppointmentController extends AbstractController
     )]
     public function getAvailabilities(Request $request, AppointmentService $appointmentService): JsonResponse
     {
+        $date = $request->query->get('date');
         $page = max((int) $request->query->get('page', 1), 1);
-        $availabilities = $appointmentService->getAvailabilities($page);
+
+        $availabilities = [];
+
+        if ($date) {
+            $availabilities = $appointmentService->getDateAvailabilities($date);
+        } else {
+            $availabilities = $appointmentService->getAvailabilities($page);
+        }
 
         return $this->json(['availabilities' => $availabilities]);
     }
-
 
     #[Route('', name: 'app_appointment_create_appointment', methods: ['POST'])]
     #[OA\Post(

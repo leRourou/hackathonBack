@@ -42,6 +42,16 @@ class AppointmentService
         return $availabilities;
     }
 
+    public function getDateAvailabilities(string $date): array
+    {
+        $slots = $this->generateRandomSlots();
+
+        return [
+            'date' => $date,
+            'slots' => $slots
+        ];
+    }
+
     public function generateRandomSlots(): array
     {
         $possibleSlots = [
