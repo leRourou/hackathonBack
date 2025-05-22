@@ -140,4 +140,9 @@ class AppointmentService
 
         return $appointments;
     }
+
+    public function getAppointmentById(string $id): ?Appointment
+    {
+        return $this->appointmentRepository->find($id);
+    }
 }

@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Attributes as OA;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api/appointments', name: 'app_appointment_')]
 final class AppointmentController extends AbstractController
@@ -189,6 +192,32 @@ final class AppointmentController extends AbstractController
 
         return $this->json($appointments, 200, context: [
             'groups' => ['appointment:read'],
+        ]);
+    }
+
+
+    #[Route('/{appointmentId}/pdf', name: 'app_appointment_pdf_summary', methods: ['GET'])]
+    public function generatePDFSummary(AppointmentService $appointmentService, string $appointmentId): Response
+    {
+        $appointment = $appointmentService->getAppointmentById($appointmentId);
+
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        $html = $this->renderView('appointment/pdf-summary.html.twig', [
+            'appointment' => $appointment
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="rendezvous.pdf"',
         ]);
     }
 }
