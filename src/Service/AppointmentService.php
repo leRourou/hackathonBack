@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Entity\Vehicule;
 use App\Entity\Appointment;
 use App\DTO\CreateAppointmentDTO;

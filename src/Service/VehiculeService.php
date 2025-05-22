@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Entity\Vehicule;
 use App\Repository\VehiculeRepository;
 
 class VehiculeService
