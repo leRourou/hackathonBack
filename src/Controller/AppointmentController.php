@@ -2,13 +2,18 @@
 
 namespace App\Controller;
 
-use App\Service\AppointmentService;
-use App\Service\VehiculeService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Request;
+use DateTimeImmutable;
 use OpenApi\Attributes as OA;
+use App\Service\VehiculeService;
+use App\DTO\CreateAppointmentDTO;
+use App\Form\CreateAppointmentForm;
+use App\Service\AppointmentService;
+use App\Exception\AppointmentException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/api/appointments', name: 'app_appointment_')]
 final class AppointmentController extends AbstractController
@@ -126,10 +131,37 @@ final class AppointmentController extends AbstractController
     )]
     public function createAppointment(Request $request, AppointmentService $appointmentService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $appointment = $appointmentService->createAppointment($data);
+        $form = $this->createForm(CreateAppointmentForm::class);
+        $form->submit(json_decode($request->getContent(), true));
 
-        return $this->json(['appointment' => $appointment], 201);
+        if (!$form->isValid()) {
+            return $this->json([
+                'errors' => $this->getFormErrors($form)
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $formData = $form->getData();
+            $dto = new CreateAppointmentDTO(
+                date: new \DateTimeImmutable($formData['date']),
+                status: $formData['status'],
+                notes: $formData['notes'] ?? '',
+                vehiculeId: $formData['vehicule_id'],
+                garageId: $formData['garage_id'],
+                operationIds: $formData['operations'] ?? []
+            );
+
+            $appointmentService->createAppointment($dto);
+
+            return $this->json([
+                'message' => 'Rendez-vous créé avec succès'
+            ], Response::HTTP_CREATED);
+
+        } catch (AppointmentException $e) {
+            return $this->json([
+                'error' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+        } 
     }
 
     #[Route('/user', name: 'app_appointment_get_by_user', methods: ['GET'])]
@@ -154,5 +186,14 @@ final class AppointmentController extends AbstractController
         return $this->json($appointments, 200, context: [
             'groups' => ['appointment:read'],
         ]);
+    }
+
+    private function getFormErrors($form): array
+    {
+        $errors = [];
+        foreach ($form->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+        return $errors;
     }
 }

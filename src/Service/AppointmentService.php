@@ -2,15 +2,14 @@
 
 namespace App\Service;
 
-use App\Entity\Appointment;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Vehicule;
-use App\Entity\Garage;
-use App\Entity\Operation;
-use App\Entity\User;
-use App\Repository\AppointmentRepository;
+use App\Entity\Appointment;
+use App\DTO\CreateAppointmentDTO;
 use App\Repository\GarageRepository;
 use App\Repository\VehiculeRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\AppointmentRepository;
+use App\Service\Appointment\AppointmentCreatorService;
 
 class AppointmentService
 {
@@ -18,7 +17,9 @@ class AppointmentService
         private EntityManagerInterface $entityManager,
         private GarageRepository $garageRepository,
         private VehiculeRepository $vehiculeRepository,
-        private AppointmentRepository $appointmentRepository
+        private AppointmentRepository $appointmentRepository,
+        private readonly AppointmentCreatorService $appointmentCreator,
+
     ) {}
 
     public function getAvailabilities(int $page): array
@@ -62,50 +63,14 @@ class AppointmentService
         return array_slice($possibleSlots, 0, $count);
     }
 
-    public function createAppointment(array $data): array
+    public function createAppointment(CreateAppointmentDTO $dto): Appointment
     {
-        if (!isset($data['date'], $data['status'], $data['notes'], $data['vehicule_id'], $data['garage_id'], $data['operations'])) {
-            throw new \InvalidArgumentException('Missing required data for creating an appointment.');
-        }
-
-        $appointment = new Appointment();
-
-        $appointment->setDate(new \DateTimeImmutable($data['date']));
-        $appointment->setStatus($data['status']);
-        $appointment->setNotes($data['notes']);
-
-        $vehicule = $this->vehiculeRepository->find($data['vehicule_id']);
-        $garage = $this->garageRepository->find($data['garage_id']);
-
-        if (!$vehicule || !$garage) {
-            throw new \RuntimeException('Vehicule or Garage not found.');
-        }
-        $appointment->setVehicule($vehicule);
-        $appointment->setGarage($garage);
-
-        foreach ($data['operations'] as $operationId) {
-            $operation = $this->entityManager->getRepository(Operation::class)->find($operationId);
-            if ($operation) {
-                $appointment->addOperation($operation);
-            }
-        }
-
+        $appointment = $this->appointmentCreator->createFromDTO($dto);
+        
         $this->entityManager->persist($appointment);
         $this->entityManager->flush();
 
-        return [
-            'id' => $appointment->getId(),
-            'date' => $appointment->getDate()->format('Y-m-d H:i:s'),
-            'status' => $appointment->getStatus(),
-            'notes' => $appointment->getNotes(),
-            'created_at' => $appointment->getCreatedAt()->format('Y-m-d H:i:s'),
-            'updated_at' => $appointment->getUpdatedAt()->format('Y-m-d H:i:s'),
-            'vehicule_id' => $appointment->getVehicule()->getId(),
-            'garage_id' => $appointment->getGarage()->getId(),
-            'operations' => array_map(function ($operation) {
-                return $operation->getId();
-            }, $appointment->getOperations()->toArray())
-        ];
+        return $appointment;
     }
 
     public function getAppointmentByVehicule(Vehicule $vehicule): array

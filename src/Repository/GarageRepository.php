@@ -42,42 +42,4 @@ class GarageRepository extends ServiceEntityRepository
 
         return $result->fetchAllAssociative();
     }
-
-    public function findAll(): array
-    {
-        $conn = $this->getEntityManager()->getConnection();
-
-        $sql = "SELECT * FROM garage";
-
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery();
-
-        return $result->fetchAllAssociative();
-    }
-
-
-    //    /**
-    //     * @return Garage[] Returns an array of Garage objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Garage
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
