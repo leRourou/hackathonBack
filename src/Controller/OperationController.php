@@ -6,6 +6,8 @@ use App\Service\OperationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use App\Entity\Operation;
 use OpenApi\Attributes as OA;
 
 #[Route(path: '/api/operations')]
@@ -16,7 +18,17 @@ final class OperationController extends AbstractController
     #[OA\Get(
         path: '/api/operations/',
         summary: 'Récupère toutes les opérations',
-        description: "Retourne la liste complète de toutes les opérations existantes."
+        description: "Retourne la liste complète de toutes les opérations existantes.",
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des opérations trouvées',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Operation::class, groups: ['operation:read']))
+                )
+            ),
+        ]
     )]
     public function getAll(OperationService $operationService): JsonResponse
     {
@@ -38,6 +50,16 @@ final class OperationController extends AbstractController
                 required: true,
                 schema: new OA\Schema(type: 'string')
             )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des opérations trouvées',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Operation::class, groups: ['operation:read']))
+                )
+            ),
         ]
     )]
     public function getByCategory(OperationService $operationService, string $categoryId): JsonResponse

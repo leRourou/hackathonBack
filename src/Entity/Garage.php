@@ -10,80 +10,49 @@ use Symfony\Component\Uid\Uuid;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[OA\Schema(schema: "Garage", description: "Garage avec ses coordonnées et informations de localisation")]
 #[ORM\Entity(repositoryClass: GarageRepository::class)]
 class Garage
 {
-    #[OA\Property(
-        type: 'string',
-        format: 'uuid',
-        description: 'Identifiant unique du garage'
-    )]
+    #[OA\Property(type: 'string', format: 'uuid', description: 'Identifiant unique du garage')]
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36)]
+    #[ORM\Column(name: 'id', type: 'string', length: 36)]
     #[Groups(['appointment:read', 'garage:read'])]
     private ?string $id = null;
 
-    #[OA\Property(
-        type: 'string',
-        description: 'Nom du garage'
-    )]
-    #[ORM\Column(length: 255)]
+    #[OA\Property(type: 'string', description: 'Nom du garage')]
+    #[ORM\Column(name: 'name', length: 255)]
     #[Groups(['garage:read'])]
     private ?string $name = null;
 
-    #[OA\Property(
-        type: 'string',
-        description: 'Ville du garage'
-    )]
-    #[ORM\Column(length: 255)]
+    #[OA\Property(type: 'string', description: 'Ville du garage')]
+    #[ORM\Column(name: 'city', length: 255)]
     #[Groups(['garage:read'])]
     private ?string $city = null;
 
-    #[OA\Property(
-        type: 'string',
-        description: 'Code postal du garage',
-        maxLength: 5
-    )]
-    #[ORM\Column(length: 5)]
+    #[OA\Property(type: 'string', description: 'Code postal du garage', maxLength: 5)]
+    #[ORM\Column(name: 'postal_code', length: 5)]
     #[Groups(['garage:read'])]
-    private ?string $postal_code = null;
+    private ?string $postalCode = null;
 
-    #[OA\Property(
-        type: 'number',
-        format: 'float',
-        description: 'Latitude du garage'
-    )]
-    #[ORM\Column]
+    #[OA\Property(type: 'number', format: 'float', description: 'Latitude du garage')]
+    #[ORM\Column(name: 'latitude')]
     #[Groups(['garage:read'])]
     private ?float $latitude = null;
 
-    #[OA\Property(
-        type: 'number',
-        format: 'float',
-        description: 'Longitude du garage'
-    )]
-    #[ORM\Column]
+    #[OA\Property(type: 'number', format: 'float', description: 'Longitude du garage')]
+    #[ORM\Column(name: 'longitude')]
     #[Groups(['garage:read'])]
     private ?float $longitude = null;
 
-    #[OA\Property(
-        type: 'string',
-        format: 'date-time',
-        description: 'Date de création du garage'
-    )]
-    #[ORM\Column]
+    #[OA\Property(type: 'string', format: 'date-time', description: 'Date de création du garage')]
+    #[ORM\Column(name: 'created_at')]
     #[Groups(['garage:read'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[OA\Property(
-        type: 'string',
-        format: 'date-time',
-        description: 'Date de dernière mise à jour du garage'
-    )]
-    #[ORM\Column]
+    #[OA\Property(type: 'string', format: 'date-time', description: 'Date de dernière mise à jour du garage')]
+    #[ORM\Column(name: 'updated_at')]
     #[Groups(['garage:read'])]
-    private ?\DateTimeImmutable $updated_at = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Appointment>
@@ -100,8 +69,8 @@ class Garage
     {
         $this->appointments = new ArrayCollection();
         $this->id = Uuid::v7()->toRfc4122();
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?string
@@ -117,7 +86,6 @@ class Garage
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -129,22 +97,19 @@ class Garage
     public function setCity(string $city): static
     {
         $this->city = $city;
-
         return $this;
     }
 
     public function getPostalCode(): ?string
     {
-        return $this->postal_code;
+        return $this->postalCode;
     }
 
-    public function setPostalCode(string $postal_code): static
+    public function setPostalCode(string $postalCode): static
     {
-        $this->postal_code = $postal_code;
-
+        $this->postalCode = $postalCode;
         return $this;
     }
-
 
     public function getLatitude(): ?float
     {
@@ -154,7 +119,6 @@ class Garage
     public function setLatitude(float $latitude): static
     {
         $this->latitude = $latitude;
-
         return $this;
     }
 
@@ -166,7 +130,6 @@ class Garage
     public function setLongitude(float $longitude): static
     {
         $this->longitude = $longitude;
-
         return $this;
     }
 
@@ -191,7 +154,6 @@ class Garage
     public function removeAppointment(Appointment $appointment): static
     {
         if ($this->appointments->removeElement($appointment)) {
-            // set the owning side to null (unless already changed)
             if ($appointment->getGarage() === $this) {
                 $appointment->setGarage(null);
             }
@@ -202,25 +164,23 @@ class Garage
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
-
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->updated_at = $updated_at;
-
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }

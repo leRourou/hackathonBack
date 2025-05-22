@@ -9,37 +9,37 @@ use App\Repository\VehiculeRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: VehiculeRepository::class)]
 class Vehicule
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36)]
+    #[ORM\Column(name: 'id', type: 'string', length: 36)]
     #[Groups(["vehicule:read", "appointment:read"])]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'brand', length: 255)]
     #[Groups(["vehicule:read"])]
     private ?string $brand = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'model', length: 255)]
     #[Groups(["vehicule:read"])]
     private ?string $model = null;
 
-    #[ORM\Column(length: 7)]
+    #[ORM\Column(name: 'license_plate', length: 7)]
     #[Groups(["vehicule:read"])]
-    private ?string $license_plate = null;
+    private ?string $licensePlate = null;
 
-    #[ORM\Column(length: 17)]
+    #[ORM\Column(name: 'vin', length: 17)]
     #[Groups(["vehicule:read"])]
     private ?string $vin = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(name: 'registration_date', type: Types::DATE_MUTABLE)]
     #[Groups(["vehicule:read"])]
-    private ?\DateTime $registration_date = null;
+    private ?\DateTime $registrationDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'mileage')]
     #[Groups(["vehicule:read"])]
     private ?int $mileage = null;
 
@@ -47,13 +47,13 @@ class Vehicule
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at')]
     #[Groups(["vehicule:read"])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'updated_at')]
     #[Groups(["vehicule:read"])]
-    private ?\DateTimeImmutable $updated_at = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Appointment>
@@ -61,13 +61,12 @@ class Vehicule
     #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'vehicule', orphanRemoval: true)]
     private Collection $appointments;
 
-
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
         $this->id = Uuid::v7()->toRfc4122();
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?string
@@ -101,12 +100,12 @@ class Vehicule
 
     public function getLicensePlate(): ?string
     {
-        return $this->license_plate;
+        return $this->licensePlate;
     }
 
-    public function setLicensePlate(string $license_plate): static
+    public function setLicensePlate(string $licensePlate): static
     {
-        $this->license_plate = $license_plate;
+        $this->licensePlate = $licensePlate;
 
         return $this;
     }
@@ -125,12 +124,12 @@ class Vehicule
 
     public function getRegistrationDate(): ?\DateTime
     {
-        return $this->registration_date;
+        return $this->registrationDate;
     }
 
-    public function setRegistrationDate(\DateTime $registration_date): static
+    public function setRegistrationDate(\DateTime $registrationDate): static
     {
-        $this->registration_date = $registration_date;
+        $this->registrationDate = $registrationDate;
 
         return $this;
     }
@@ -180,7 +179,6 @@ class Vehicule
     public function removeAppointment(Appointment $appointment): static
     {
         if ($this->appointments->removeElement($appointment)) {
-            // set the owning side to null (unless already changed)
             if ($appointment->getVehicule() === $this) {
                 $appointment->setVehicule(null);
             }
@@ -191,24 +189,24 @@ class Vehicule
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

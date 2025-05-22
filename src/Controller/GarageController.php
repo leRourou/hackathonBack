@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Garage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\GarageService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 
 #[Route(path: '/api/garages')]
@@ -16,7 +18,7 @@ final class GarageController extends AbstractController
     #[OA\Get(
         path: '/api/garages',
         summary: 'Récupère les garages les plus proches',
-        description: "Retourne une liste de garages triés par distance à partir d'une latitude et longitude données.",
+        description: "Retourne une liste de garages, avec la possibilité de filtrer par latitude et longitude. Si aucune coordonnée n'est fournie, retourne tous les garages.",
         parameters: [
             new OA\QueryParameter(
                 name: 'latitude',
@@ -36,9 +38,19 @@ final class GarageController extends AbstractController
                 required: false,
                 schema: new OA\Schema(type: 'integer', default: 1)
             )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des garages trouvés',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Garage::class, groups: ['garage:read']))
+                )
+            ),
         ]
     )]
-    public function nearestGarages(Request $request, GarageService $garageService): JsonResponse
+    public function getGarages(Request $request, GarageService $garageService): JsonResponse
     {
         $lat = (float) $request->query->get('latitude');
         $lng = (float) $request->query->get('longitude');

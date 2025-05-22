@@ -34,12 +34,11 @@ final class VehiculeController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Véhicule trouvé'
+                description: 'Véhicule trouvé',
+                content: new OA\JsonContent(
+                    ref: new Model(type: Vehicule::class, groups: ['vehicule:read'])
+                )
             ),
-            new OA\Response(
-                response: 400,
-                description: 'Immatriculation invalide'
-            )
         ]
     )]
     public function getByImmatriculation(string $immatriculation): JsonResponse
@@ -58,7 +57,9 @@ final class VehiculeController extends AbstractController
         $vehicule->setVin('1HGCM82633A123456');
         $vehicule->setRegistrationDate(new \DateTime('2020-01-01'));
 
-        return $this->json($vehicule);
+        return $this->json($vehicule, 200, [], [
+            'groups' => ['vehicule:read'],
+        ]);
     }
 
     #[Route('', name: 'app_vehicule_store', methods: ['POST'])]
@@ -71,16 +72,6 @@ final class VehiculeController extends AbstractController
             description: 'Données du véhicule à enregistrer',
             content: new OA\JsonContent(ref: '#/components/schemas/Vehicule')
         ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Véhicule créé avec succès'
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Données invalides'
-            )
-        ]
     )]
     public function store(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -110,13 +101,12 @@ final class VehiculeController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Liste des véhicules',
-                content: [new Model(type: Vehicule::class, groups: ['vehicule:read'])]
+                description: 'Liste des véhicule trouvés',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Vehicule::class, groups: ['vehicule:read']))
+                )
             ),
-            new OA\Response(
-                response: 401,
-                description: 'Utilisateur non authentifié'
-            )
         ]
     )]
     public function getVehiculesByUser(VehiculeService $vehiculeService): JsonResponse
@@ -179,14 +169,6 @@ final class VehiculeController extends AbstractController
                     ],
                     type: 'object'
                 )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Utilisateur non authentifié'
-            ),
-            new OA\Response(
-                response: 500,
-                description: 'Erreur interne du serveur'
             )
         ]
     )]
