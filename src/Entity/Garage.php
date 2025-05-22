@@ -21,8 +21,7 @@ class Garage
     )]
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
-    #[Groups(['appointment:read'])]
-
+    #[Groups(['appointment:read', 'garage:read'])]
     private ?string $id = null;
 
     #[OA\Property(
@@ -30,6 +29,7 @@ class Garage
         description: 'Nom du garage'
     )]
     #[ORM\Column(length: 255)]
+    #[Groups(['garage:read'])]
     private ?string $name = null;
 
     #[OA\Property(
@@ -37,6 +37,7 @@ class Garage
         description: 'Ville du garage'
     )]
     #[ORM\Column(length: 255)]
+    #[Groups(['garage:read'])]
     private ?string $city = null;
 
     #[OA\Property(
@@ -45,6 +46,7 @@ class Garage
         maxLength: 5
     )]
     #[ORM\Column(length: 5)]
+    #[Groups(['garage:read'])]
     private ?string $postal_code = null;
 
     #[OA\Property(
@@ -53,6 +55,7 @@ class Garage
         description: 'Latitude du garage'
     )]
     #[ORM\Column]
+    #[Groups(['garage:read'])]
     private ?float $latitude = null;
 
     #[OA\Property(
@@ -61,6 +64,7 @@ class Garage
         description: 'Longitude du garage'
     )]
     #[ORM\Column]
+    #[Groups(['garage:read'])]
     private ?float $longitude = null;
 
     #[OA\Property(
@@ -69,6 +73,7 @@ class Garage
         description: 'Date de création du garage'
     )]
     #[ORM\Column]
+    #[Groups(['garage:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[OA\Property(
@@ -77,6 +82,7 @@ class Garage
         description: 'Date de dernière mise à jour du garage'
     )]
     #[ORM\Column]
+    #[Groups(['garage:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**

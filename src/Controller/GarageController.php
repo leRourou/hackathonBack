@@ -54,6 +54,6 @@ final class GarageController extends AbstractController
 
         return $this->json([
             'garages' => $garages
-        ]);
+        ], context: ['groups' => ['garage:read']]);
     }
 }
