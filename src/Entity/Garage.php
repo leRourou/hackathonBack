@@ -21,6 +21,8 @@ class Garage
     )]
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(['appointment:read'])]
+
     private ?string $id = null;
 
     #[OA\Property(

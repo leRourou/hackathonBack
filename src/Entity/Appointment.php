@@ -40,10 +40,12 @@ class Appointment
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['appointment:read'])]
     private ?Vehicule $vehicule = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['appointment:read'])]
     private ?Garage $garage = null;
 
     /**
