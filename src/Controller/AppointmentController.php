@@ -188,7 +188,7 @@ final class AppointmentController extends AbstractController
 
     #[Route('/{appointmentId}/pdf', name: 'app_appointment_pdf_summary', methods: ['GET'])]
     #[OA\Get(
-        path: '/appointments/{appointmentId}/pdf',
+        path: '/api/appointments/{appointmentId}/pdf',
         summary: 'Génère un résumé PDF du rendez-vous',
         description: "Retourne un fichier PDF contenant les détails complets d'un rendez-vous, incluant le véhicule, le garage et les opérations associées.",
         operationId: 'getAppointmentPdfSummary',
