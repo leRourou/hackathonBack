@@ -43,6 +43,16 @@ class AppointmentService
         return $availabilities;
     }
 
+    public function getDateAvailabilities(string $date): array
+    {
+        $slots = $this->generateRandomSlots();
+
+        return [
+            'date' => $date,
+            'slots' => $slots
+        ];
+    }
+
     public function generateRandomSlots(): array
     {
         $possibleSlots = [
@@ -73,8 +83,31 @@ class AppointmentService
         return $appointment;
     }
 
-    public function getAppointmentByVehicule(Vehicule $vehicule): array
+    public function getAppointmentsByVehicule(Vehicule $vehicule): array
     {
         return $this->appointmentRepository->findBy(['vehicule' => $vehicule]);
+    }
+
+    public function getAppointmentsByUser(User $user)
+    {
+        $vehicules = $this->vehiculeRepository->findByUser($user->getId());
+
+        $appointments = [];
+
+        foreach ($vehicules as $vehicule) {
+
+            $vehiculeAppointments = $this->getAppointmentsByVehicule($vehicule);
+
+            if (empty($vehiculeAppointments)) continue;
+
+            $appointments = array_merge($appointments, $vehiculeAppointments);
+        }
+
+        return $appointments;
+    }
+
+    public function getAppointmentById(string $id): ?Appointment
+    {
+        return $this->appointmentRepository->find($id);
     }
 }

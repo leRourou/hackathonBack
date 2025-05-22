@@ -16,7 +16,7 @@ class Vehicule
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
-    #[Groups(["vehicule:read"])]
+    #[Groups(["vehicule:read", "appointment:read"])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]

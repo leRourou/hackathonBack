@@ -88,7 +88,7 @@ final class VehiculeController extends AbstractController
         $form->submit(json_decode($request->getContent(), true));
 
         if (!$form->isValid()) {
-            return $this->json($form->getErrors(), Response::HTTP_BAD_REQUEST);
+            return $this->json((string) $form->getErrors(), Response::HTTP_BAD_REQUEST);
         }
 
         /** @var Vehicule */

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis - Rendez-vous</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: left;
+            border-bottom: 2px solid #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .company-info {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        table.meta, table.operations {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.meta td.label {
+            font-weight: bold;
+            width: 30%;
+            padding: 4px 8px;
+            background-color: #f4f6f8;
+        }
+
+        table.meta td {
+            padding: 4px 8px;
+        }
+
+        table.operations th, table.operations td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        table.operations th {
+            background-color: #f4f6f8;
+            text-align: left;
+        }
+
+        .totals {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .totals .label {
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            margin-top: 50px;
+        }
+
+        .signature {
+            margin-top: 60px;
+            text-align: right;
+        }
+
+        .signature .line {
+            border-top: 1px solid #333;
+            width: 200px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>DEVIS - RÉSUMÉ DU RENDEZ-VOUS</h1>
+        <div class="company-info">
+            {{ appointment.garage.name }}<br>
+            {{ appointment.garage.getPostalCode }} {{ appointment.garage.city }}<br>
+            GPS : {{ appointment.garage.latitude }}, {{ appointment.garage.longitude }}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Détails du rendez-vous</div>
+        <table class="meta">
+            <tr>
+                <td class="label">Date :</td>
+                <td>{{ appointment.date|date('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td class="label">Statut :</td>
+                <td>{{ appointment.status|capitalize }}</td>
+            </tr>
+            <tr>
+                <td class="label">Référence :</td>
+                <td>{{ appointment.id }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Client / Véhicule</div>
+        <table class="meta">
+            <tr>
+                <td class="label">Marque :</td>
+                <td>{{ appointment.vehicule.brand }}</td>
+            </tr>
+            <tr>
+                <td class="label">Modèle :</td>
+                <td>{{ appointment.vehicule.model }}</td>
+            </tr>
+            <tr>
+                <td class="label">Immatriculation :</td>
+                <td>{{ appointment.vehicule.getLicensePlate }}</td>
+            </tr>
+            <tr>
+                <td class="label">VIN :</td>
+                <td>{{ appointment.vehicule.vin }}</td>
+            </tr>
+            <tr>
+                <td class="label">Kilométrage :</td>
+                <td>{{ appointment.vehicule.mileage }} km</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Prestations</div>
+        {% if appointment.operations is not empty %}
+            <table class="operations">
+                <thead>
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Durée (min)</th>
+                        <th>Prix (€)</th>
+                        <th>Commentaires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set total = 0 %}
+                    {% for op in appointment.operations %}
+                        <tr>
+                            <td>{{ op.name }}</td>
+                            <td>{{ op.getTimeUnit ?? '-' }}</td>
+                            <td>
+                                {% set price = op.price + 0 %}
+                                {{ price|number_format(2, ',', ' ') }}
+                                {% set total = total + price %}
+                            </td>
+                            <td>
+                                {% if op.getAdditionnalComment != 'NULL' %}
+                                    {{ op.getAdditionnalComment }}
+                                {% elseif op.getAdditionnalHelp != 'NULL' %}
+                                    {{ op.getAdditionnalHelp }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="totals">
+                <p class="label">Total estimé : {{ total|number_format(2, ',', ' ') }} €</p>
+            </div>
+        {% else %}
+            <p>Aucune opération spécifiée.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <div class="section-title">Notes du client</div>
+        <p>{{ appointment.notes }}</p>
+    </div>
+
+    <div class="signature">
+        <p>Signature client</p>
+        <div class="line"></div>
+    </div>
+
+    <div class="footer">
+        Devis généré automatiquement – {{ "now"|date("d/m/Y H:i") }}
+    </div>
+
+</body>
+</html>

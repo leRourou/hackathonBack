@@ -31,25 +31,28 @@ class Appointment
     private ?string $notes = null;
 
     #[ORM\Column]
-    #[Groups(groups: ['appointment:read'])]
+    #[Groups(['appointment:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['appointment:read'])]
+    #[Groups(groups: ['appointment:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['appointment:read'])]
     private ?Vehicule $vehicule = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['appointment:read'])]
     private ?Garage $garage = null;
 
     /**
      * @var Collection<int, Operation>
      */
     #[ORM\ManyToMany(targetEntity: Operation::class, inversedBy: 'appointments')]
+    #[Groups(groups: ['appointment:read'])]
     private Collection $operations;
 
     public function __construct()
