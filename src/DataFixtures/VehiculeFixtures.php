@@ -56,7 +56,6 @@ class VehiculeFixtures extends Fixture implements DependentFixtureInterface
                 $manager->persist($vehicule);
             }
         }
-
         $manager->flush();
     }
 

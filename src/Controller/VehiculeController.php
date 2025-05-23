@@ -43,7 +43,7 @@ final class VehiculeController extends AbstractController
             ),
         ]
     )]
-    public function getByImmatriculation(string $immatriculation, UserRepository $userRepository): JsonResponse
+    public function getByImmatriculation(string $immatriculation, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
         $regex = '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/';
 
@@ -62,6 +62,9 @@ final class VehiculeController extends AbstractController
         $user = $userRepository->findAll();
         
         $vehicule->setUser($user[0]);
+
+        $em->persist($vehicule);
+        $em->flush();
 
         return $this->json($vehicule, 200, [], [
             'groups' => ['vehicule:read'],
