@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Vehicule;
 use OpenApi\Attributes as OA;
 use App\Form\VehiculeStoreForm;
+use App\Repository\UserRepository;
 use App\Service\VehiculeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +43,7 @@ final class VehiculeController extends AbstractController
             )
         ]
     )]
-    public function getByImmatriculation(string $immatriculation): JsonResponse
+    public function getByImmatriculation(string $immatriculation, UserRepository $userRepository): JsonResponse
     {
         $regex = '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/';
 
@@ -57,6 +58,10 @@ final class VehiculeController extends AbstractController
         $vehicule->setMileage(123456);
         $vehicule->setVin('1HGCM82633A123456');
         $vehicule->setRegistrationDate(new \DateTime('2020-01-01'));
+
+        $user = $userRepository->findAll();
+        
+        $vehicule->setUser($user[0]);
 
         return $this->json($vehicule);
     }
