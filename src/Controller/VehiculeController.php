@@ -45,12 +45,6 @@ final class VehiculeController extends AbstractController
     )]
     public function getByImmatriculation(string $immatriculation, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
-        $regex = '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/';
-
-        if (!preg_match($regex, $immatriculation)) {
-            return $this->json(['error' => 'Immatriculation invalide'], 400);
-        }
-
         $vehicule = new Vehicule();
         $vehicule->setLicensePlate($immatriculation);
         $vehicule->setBrand('Renault');
