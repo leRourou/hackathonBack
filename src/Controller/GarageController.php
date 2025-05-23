@@ -19,6 +19,7 @@ final class GarageController extends AbstractController
         path: '/api/garages',
         summary: 'Récupère les garages les plus proches',
         description: "Retourne une liste de garages, avec la possibilité de filtrer par latitude et longitude. Si aucune coordonnée n'est fournie, retourne tous les garages.",
+        tags: ['Garage'],
         parameters: [
             new OA\QueryParameter(
                 name: 'latitude',

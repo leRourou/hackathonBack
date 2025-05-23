@@ -18,6 +18,7 @@ final class OperationCategoryController extends AbstractController
         path: '/api/operations/category',
         summary: 'Récupère toutes les catégories d\'opérations',
         description: 'Retourne l\'ensemble des catégories d\'opérations disponibles.',
+        tags: ['Catégorie d\'opération'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -43,6 +44,7 @@ final class OperationCategoryController extends AbstractController
         path: '/api/operations/category/{id}',
         summary: 'Récupère une catégorie d\'opération par son identifiant',
         description: 'Retourne la catégorie d\'opération correspondant à l\'identifiant donné.',
+        tags: ['Catégorie d\'opération'],
         responses: [
             new OA\Response(
                 response: 200,

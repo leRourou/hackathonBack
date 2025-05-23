@@ -23,6 +23,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules/{immatriculation}',
         summary: 'Récupère un véhicule par son immatriculation',
         description: "Retourne les informations d'un véhicule correspondant à une immatriculation donnée (au format AA-123-AA).",
+        tags: ['Véhicule'],
         parameters: [
             new OA\PathParameter(
                 name: 'immatriculation',
@@ -67,6 +68,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules',
         summary: 'Ajoute un véhicule',
         description: "Permet à un utilisateur connecté d'enregistrer un nouveau véhicule.",
+        tags: ['Véhicule'],
         requestBody: new OA\RequestBody(
             required: true,
             description: 'Données du véhicule à enregistrer',
@@ -98,6 +100,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules',
         summary: "Liste des véhicules de l'utilisateur",
         description: "Récupère tous les véhicules associés à l'utilisateur actuellement connecté.",
+        tags: ['Véhicule'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -121,6 +124,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules/{vehiculeId}/operations',
         summary: "Prochaines opérations d’un véhicule",
         description: "Récupère les prochaines opérations à effectuer sur le véhicule identifié.",
+        tags: ['Véhicule'],
         parameters: [
             new OA\Parameter(
                 name: 'vehiculeId',

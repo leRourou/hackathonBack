@@ -20,6 +20,7 @@ final class AuthController extends AbstractController
         path: '/api/register',
         summary: 'Créer un nouvel utilisateur',
         description: "Permet de créer un compte utilisateur à partir d'une requête JSON avec email et mot de passe.",
+        tags: ['Authentification'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

@@ -26,6 +26,7 @@ final class AppointmentController extends AbstractController
         path: '/api/appointments/avaibilities',
         summary: 'Récupère les créneaux de rendez-vous disponibles',
         description: 'Retourne les créneaux disponibles d\'un garage pour les 5 prochains jours paginés. Peut également retouner les créneaux d\'une date spécifique.',
+        tags: ['Rendez-vous'],
         parameters: [
             new OA\QueryParameter(
                 name: 'page',
@@ -88,6 +89,7 @@ final class AppointmentController extends AbstractController
         path: '/api/appointments',
         summary: 'Créer un rendez-vous',
         description: 'Crée un nouveau rendez-vous avec un véhicule, un garage et une liste d\'opérations.',
+        tags: ['Rendez-vous'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -157,6 +159,7 @@ final class AppointmentController extends AbstractController
         path: '/api/appointments/user',
         summary: 'Récupérer les rendez-vous de l\'utilisateur',
         description: 'Retourne tous les rendez-vous associés à l\'utilisateur actuellement connecté.',
+        tags: ['Rendez-vous'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -191,7 +194,6 @@ final class AppointmentController extends AbstractController
         path: '/api/appointments/{appointmentId}/pdf',
         summary: 'Génère un résumé PDF du rendez-vous',
         description: "Retourne un fichier PDF contenant les détails complets d'un rendez-vous, incluant le véhicule, le garage et les opérations associées.",
-        operationId: 'getAppointmentPdfSummary',
         tags: ['Rendez-vous'],
         parameters: [
             new OA\Parameter(
