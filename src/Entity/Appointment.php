@@ -14,29 +14,29 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Appointment
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36)]
+    #[ORM\Column(name: 'id', type: 'string', length: 36)]
     #[Groups(['appointment:read'])]
     private ?string $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'date')]
     #[Groups(['appointment:read'])]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'status', length: 255)]
     #[Groups(['appointment:read'])]
     private ?string $status = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(name: 'notes', type: Types::TEXT)]
     #[Groups(['appointment:read'])]
     private ?string $notes = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at')]
     #[Groups(['appointment:read'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    #[Groups(groups: ['appointment:read'])]
-    private ?\DateTimeImmutable $updated_at = null;
+    #[ORM\Column(name: 'updated_at')]
+    #[Groups(['appointment:read'])]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
@@ -52,15 +52,15 @@ class Appointment
      * @var Collection<int, Operation>
      */
     #[ORM\ManyToMany(targetEntity: Operation::class, inversedBy: 'appointments')]
-    #[Groups(groups: ['appointment:read'])]
+    #[Groups(['appointment:read'])]
     private Collection $operations;
 
     public function __construct()
     {
         $this->operations = new ArrayCollection();
         $this->id = Uuid::v7()->toRfc4122();
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?string
@@ -73,11 +73,9 @@ class Appointment
         return $this->date;
     }
 
-
     public function setDate(\DateTimeImmutable $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -89,7 +87,6 @@ class Appointment
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -101,31 +98,28 @@ class Appointment
     public function setNotes(string $notes): static
     {
         $this->notes = $notes;
-
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
-
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->updated_at = $updated_at;
-
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
@@ -137,7 +131,6 @@ class Appointment
     public function setVehicule(?Vehicule $vehicule): static
     {
         $this->vehicule = $vehicule;
-
         return $this;
     }
 
@@ -149,7 +142,6 @@ class Appointment
     public function setGarage(?Garage $garage): static
     {
         $this->garage = $garage;
-
         return $this;
     }
 
@@ -173,7 +165,6 @@ class Appointment
     public function removeOperation(Operation $operation): static
     {
         $this->operations->removeElement($operation);
-
         return $this;
     }
 }

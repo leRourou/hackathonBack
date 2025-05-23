@@ -21,7 +21,7 @@ class VehiculeStoreForm extends AbstractType
             ->add('model', TextType::class)
             ->add('license_plate', TextType::class)
             ->add('vin', TextType::class)
-           ->add('registration_date', DateType::class, [
+            ->add('registration_date', DateType::class, [
                 'widget' => 'single_text',
                 'input' => 'datetime'
             ])

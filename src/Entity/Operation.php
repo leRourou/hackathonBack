@@ -15,38 +15,37 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class Operation
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36)]
+    #[ORM\Column(name: 'id', type: 'string', length: 36)]
     #[Groups(['operation:read', 'appointment:read'])]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'name', length: 255)]
     #[Groups(['operation:read', 'appointment:read'])]
-
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(name: 'additionnal_help', type: Types::TEXT, nullable: true)]
     #[Groups(['operation:read'])]
-    private ?string $additionnal_help = null;
+    private ?string $additionnalHelp = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(name: 'additionnal_comment', type: Types::TEXT, nullable: true)]
     #[Groups(['operation:read'])]
-    private ?string $additionnal_comment = null;
+    private ?string $additionnalComment = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'time_unit')]
     #[Groups(['operation:read'])]
-    private ?int $time_unit = null;
+    private ?int $timeUnit = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(name: 'price', type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Groups(['operation:read'])]
     private ?string $price = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at')]
     #[Groups(['operation:read'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'updated_at')]
     #[Groups(['operation:read'])]
-    private ?\DateTimeImmutable $updated_at = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Appointment>
@@ -62,8 +61,8 @@ class Operation
     {
         $this->appointments = new ArrayCollection();
         $this->id = Uuid::v7()->toRfc4122();
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?string
@@ -79,43 +78,39 @@ class Operation
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
     public function getAdditionnalHelp(): ?string
     {
-        return $this->additionnal_help;
+        return $this->additionnalHelp;
     }
 
-    public function setAdditionnalHelp(?string $additionnal_help): static
+    public function setAdditionnalHelp(?string $additionnalHelp): static
     {
-        $this->additionnal_help = $additionnal_help;
-
+        $this->additionnalHelp = $additionnalHelp;
         return $this;
     }
 
     public function getAdditionnalComment(): ?string
     {
-        return $this->additionnal_comment;
+        return $this->additionnalComment;
     }
 
-    public function setAdditionnalComment(?string $additionnal_comment): static
+    public function setAdditionnalComment(?string $additionnalComment): static
     {
-        $this->additionnal_comment = $additionnal_comment;
-
+        $this->additionnalComment = $additionnalComment;
         return $this;
     }
 
     public function getTimeUnit(): ?int
     {
-        return $this->time_unit;
+        return $this->timeUnit;
     }
 
-    public function setTimeUnit(int $time_unit): static
+    public function setTimeUnit(int $timeUnit): static
     {
-        $this->time_unit = $time_unit;
-
+        $this->timeUnit = $timeUnit;
         return $this;
     }
 
@@ -127,7 +122,6 @@ class Operation
     public function setPrice(string $price): static
     {
         $this->price = $price;
-
         return $this;
     }
 
@@ -160,28 +154,25 @@ class Operation
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
-
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->updated_at = $updated_at;
-
+        $this->updatedAt = $updatedAt;
         return $this;
     }
-
 
     #[Groups(['operation:read'])]
     #[SerializedName('category')]
@@ -198,7 +189,6 @@ class Operation
     public function setCategory(?OperationCategory $category): self
     {
         $this->category = $category;
-
         return $this;
     }
 }

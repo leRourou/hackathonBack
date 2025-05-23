@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\CreateAppointmentDTO;
+use App\Entity\Appointment;
 use App\Form\CreateAppointmentForm;
 use App\Service\AppointmentService;
 use App\Exception\AppointmentException;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -23,7 +25,8 @@ final class AppointmentController extends AbstractController
     #[OA\Get(
         path: '/api/appointments/avaibilities',
         summary: 'Récupère les créneaux de rendez-vous disponibles',
-        description: 'Retourne les créneaux disponibles paginés pour la prise de rendez-vous.',
+        description: 'Retourne les créneaux disponibles d\'un garage pour les 5 prochains jours paginés. Peut également retouner les créneaux d\'une date spécifique.',
+        tags: ['Rendez-vous'],
         parameters: [
             new OA\QueryParameter(
                 name: 'page',
@@ -33,7 +36,7 @@ final class AppointmentController extends AbstractController
             ),
             new OA\QueryParameter(
                 name: 'date',
-                description: 'Date spécifique pour récupérer les créneaux disponibles',
+                description: 'Date spécifique pour récupérer les créneaux disponibles. Si non fournie, retourne tous les créneaux disponibles pour les 5 prochains jours.',
                 required: false,
                 schema: new OA\Schema(type: 'string', format: 'date', example: '2025-05-21')
             )
@@ -85,7 +88,8 @@ final class AppointmentController extends AbstractController
     #[OA\Post(
         path: '/api/appointments',
         summary: 'Créer un rendez-vous',
-        description: 'Crée un nouveau rendez-vous avec un véhicule, un garage et une liste d’opérations.',
+        description: 'Crée un nouveau rendez-vous avec un véhicule, un garage et une liste d\'opérations.',
+        tags: ['Rendez-vous'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -111,35 +115,9 @@ final class AppointmentController extends AbstractController
                 response: 201,
                 description: 'Rendez-vous créé avec succès',
                 content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(
-                            property: 'appointment',
-                            type: 'object',
-                            properties: [
-                                new OA\Property(property: 'id', type: 'integer', example: 42),
-                                new OA\Property(property: 'date', type: 'string', format: 'date-time', example: '2025-05-22 14:00:00'),
-                                new OA\Property(property: 'status', type: 'string', example: 'pending'),
-                                new OA\Property(property: 'notes', type: 'string', example: 'Client souhaite une vidange et un contrôle des freins.'),
-                                new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
-                                new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
-                                new OA\Property(property: 'vehicule_id', type: 'string', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
-                                new OA\Property(property: 'garage_id', type: 'integer', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
-                                new OA\Property(
-                                    property: 'operations',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'string'),
-                                    example: ['0196f274-2ebf-7e7a-a304-5470b0a52028', '0196f274-2ebf-7e7a-a304-5470b0a52028']
-                                )
-                            ]
-                        )
-                    ]
+                    ref: new Model(type: Appointment::class, groups: ['appointment:read'])
                 )
             ),
-            new OA\Response(
-                response: 400,
-                description: 'Données manquantes ou incorrectes'
-            )
         ]
     )]
     public function createAppointment(Request $request, AppointmentService $appointmentService): JsonResponse
@@ -169,49 +147,28 @@ final class AppointmentController extends AbstractController
             return $this->json([
                 'message' => 'Rendez-vous créé avec succès'
             ], Response::HTTP_CREATED);
-
         } catch (AppointmentException $e) {
             return $this->json([
                 'error' => $e->getMessage()
             ], Response::HTTP_NOT_FOUND);
-        } 
+        }
     }
 
     #[Route('/user', name: 'app_appointment_get_by_user', methods: ['GET'])]
-    #[OA\Post(
+    #[OA\Get(
         path: '/api/appointments/user',
-        summary: 'Récupérer les rendez-vous de l’utilisateur',
-        description: 'Retourne tous les rendez-vous associés à l’utilisateur actuellement connecté.',
+        summary: 'Récupérer les rendez-vous de l\'utilisateur',
+        description: 'Retourne tous les rendez-vous associés à l\'utilisateur actuellement connecté.',
+        tags: ['Rendez-vous'],
         responses: [
             new OA\Response(
-                response: 201,
-                description: 'Rendez-vous créé avec succès',
+                response: 200,
+                description: 'Liste des véhicule trouvés',
                 content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(
-                            property: 'appointment',
-                            type: 'array',
-                            properties: [
-                                new OA\Property(property: 'id', type: 'integer', example: 42),
-                                new OA\Property(property: 'date', type: 'string', format: 'date-time', example: '2025-05-22 14:00:00'),
-                                new OA\Property(property: 'status', type: 'string', example: 'pending'),
-                                new OA\Property(property: 'notes', type: 'string', example: 'Client souhaite une vidange et un contrôle des freins.'),
-                                new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
-                                new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2025-05-20 10:00:00'),
-                                new OA\Property(property: 'vehicule_id', type: 'string', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
-                                new OA\Property(property: 'garage_id', type: 'integer', example: '0196f274-2ebf-7e7a-a304-5470b0a52028'),
-                                new OA\Property(
-                                    property: 'operations',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'string'),
-                                    example: ['0196f274-2ebf-7e7a-a304-5470b0a52028', '0196f274-2ebf-7e7a-a304-5470b0a52028']
-                                )
-                            ]
-                        )
-                    ]
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Appointment::class, groups: ['appointment:read']))
                 )
-            )
+            ),
         ]
     )]
     public function getAppointmentByUser(AppointmentService $appointmentService): JsonResponse
@@ -234,10 +191,9 @@ final class AppointmentController extends AbstractController
 
     #[Route('/{appointmentId}/pdf', name: 'app_appointment_pdf_summary', methods: ['GET'])]
     #[OA\Get(
-        path: '/appointments/{appointmentId}/pdf',
+        path: '/api/appointments/{appointmentId}/pdf',
         summary: 'Génère un résumé PDF du rendez-vous',
-        description: 'Retourne un fichier PDF contenant les détails complets d’un rendez-vous, incluant le véhicule, le garage et les opérations associées.',
-        operationId: 'getAppointmentPdfSummary',
+        description: "Retourne un fichier PDF contenant les détails complets d'un rendez-vous, incluant le véhicule, le garage et les opérations associées.",
         tags: ['Rendez-vous'],
         parameters: [
             new OA\Parameter(
@@ -257,10 +213,6 @@ final class AppointmentController extends AbstractController
                     format: 'binary',
                     example: 'Fichier PDF en sortie'
                 )
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Rendez-vous introuvable'
             )
         ]
     )]

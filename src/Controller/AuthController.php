@@ -20,6 +20,7 @@ final class AuthController extends AbstractController
         path: '/api/register',
         summary: 'Créer un nouvel utilisateur',
         description: "Permet de créer un compte utilisateur à partir d'une requête JSON avec email et mot de passe.",
+        tags: ['Authentification'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -31,38 +32,38 @@ final class AuthController extends AbstractController
                         type: 'string',
                         format: 'email',
                         example: 'utilisateur@exemple.com',
-                        description: 'Adresse email de l’utilisateur'
+                        description: "Adresse email de l'utilisateur"
                     ),
                     new OA\Property(
                         property: 'password',
                         type: 'string',
                         format: 'password',
                         example: 'SuperMotDePasse123!',
-                        description: 'Mot de passe de l’utilisateur'
+                        description: "Mot de passe de l'utilisateur"
                     ),
                     new OA\Property(
                         property: 'firstname',
                         type: 'string',
                         example: 'Jeremy',
-                        description: 'Prénom de l’utilisateur'
+                        description: "Prénom de l'utilisateur"
                     ),
                     new OA\Property(
                         property: 'lastname',
                         type: 'string',
                         example: 'Poulain',
-                        description: 'Nom de famille de l’utilisateur'
+                        description: "Nom de famille de l'utilisateur"
                     ),
                     new OA\Property(
                         property: 'is_driver',
                         type: 'boolean',
                         example: 'false',
-                        description: "Indique si l’utilisateur est un conducteur"
+                        description: "Indique si l'utilisateur est un conducteur"
                     ),
                     new OA\Property(
                         property: 'phone',
                         type: 'string',
                         example: '0788996633',
-                        description: 'Numéro de téléphone de l’utilisateur'
+                        description: "Numéro de téléphone de l'utilisateur"
                     )
                 ]
             )
@@ -81,14 +82,6 @@ final class AuthController extends AbstractController
                             description: 'Message de confirmation'
                         )
                     ]
-                )
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Données invalides envoyées au formulaire',
-                content: new OA\JsonContent(
-                    type: 'string',
-                    example: 'Cette valeur ne doit pas être vide.'
                 )
             )
         ]

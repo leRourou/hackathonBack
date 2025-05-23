@@ -24,6 +24,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules/{immatriculation}',
         summary: 'Récupère un véhicule par son immatriculation',
         description: "Retourne les informations d'un véhicule correspondant à une immatriculation donnée (au format AA-123-AA).",
+        tags: ['Véhicule'],
         parameters: [
             new OA\PathParameter(
                 name: 'immatriculation',
@@ -35,12 +36,11 @@ final class VehiculeController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Véhicule trouvé'
+                description: 'Véhicule trouvé',
+                content: new OA\JsonContent(
+                    ref: new Model(type: Vehicule::class, groups: ['vehicule:read'])
+                )
             ),
-            new OA\Response(
-                response: 400,
-                description: 'Immatriculation invalide'
-            )
         ]
     )]
     public function getByImmatriculation(string $immatriculation, UserRepository $userRepository): JsonResponse
@@ -63,7 +63,9 @@ final class VehiculeController extends AbstractController
         
         $vehicule->setUser($user[0]);
 
-        return $this->json($vehicule);
+        return $this->json($vehicule, 200, [], [
+            'groups' => ['vehicule:read'],
+        ]);
     }
 
     #[Route('', name: 'app_vehicule_store', methods: ['POST'])]
@@ -71,21 +73,12 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules',
         summary: 'Ajoute un véhicule',
         description: "Permet à un utilisateur connecté d'enregistrer un nouveau véhicule.",
+        tags: ['Véhicule'],
         requestBody: new OA\RequestBody(
             required: true,
             description: 'Données du véhicule à enregistrer',
             content: new OA\JsonContent(ref: '#/components/schemas/Vehicule')
         ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Véhicule créé avec succès'
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Données invalides'
-            )
-        ]
     )]
     public function store(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -112,16 +105,16 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules',
         summary: "Liste des véhicules de l'utilisateur",
         description: "Récupère tous les véhicules associés à l'utilisateur actuellement connecté.",
+        tags: ['Véhicule'],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Liste des véhicules',
-                content: [new Model(type: Vehicule::class, groups: ['vehicule:read'])]
+                description: 'Liste des véhicule trouvés',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Vehicule::class, groups: ['vehicule:read']))
+                )
             ),
-            new OA\Response(
-                response: 401,
-                description: 'Utilisateur non authentifié'
-            )
         ]
     )]
     public function getVehiculesByUser(VehiculeService $vehiculeService): JsonResponse
@@ -136,6 +129,7 @@ final class VehiculeController extends AbstractController
         path: '/api/vehicules/{vehiculeId}/operations',
         summary: "Prochaines opérations d’un véhicule",
         description: "Récupère les prochaines opérations à effectuer sur le véhicule identifié.",
+        tags: ['Véhicule'],
         parameters: [
             new OA\Parameter(
                 name: 'vehiculeId',
@@ -184,14 +178,6 @@ final class VehiculeController extends AbstractController
                     ],
                     type: 'object'
                 )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Utilisateur non authentifié'
-            ),
-            new OA\Response(
-                response: 500,
-                description: 'Erreur interne du serveur'
             )
         ]
     )]
